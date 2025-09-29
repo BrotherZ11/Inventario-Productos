@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Minimal custom CSS only when needed */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  padding: 0.5rem;
+  background: #000;
+  color: #fff;
+  z-index: 1000;
+}
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+.detail-img {
+  max-height: 300px;
+  object-fit: cover;
+}
