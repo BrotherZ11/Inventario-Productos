@@ -20,7 +20,7 @@ export const detectedMapping = {
   "currency": null,
   "image": "Foto",
   "description": null,
-  "stock": "Nº",
+  "original_price": "Consideration Amount",
   "contact_msg": null,
   "visible": null
 };
