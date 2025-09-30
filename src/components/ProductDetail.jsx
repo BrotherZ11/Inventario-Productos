@@ -132,7 +132,7 @@ export default function ProductDetail({
       try {
         await navigator.share({
           title,
-          text: description ? description.substring(0, 200) : title,
+          text: title,
           url: shareUrl,
         });
         setShareOpen(false);
@@ -191,7 +191,6 @@ export default function ProductDetail({
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}
-        aria-describedby={description ? descId : undefined}
         tabIndex={-1}
         className="w-full h-full sm:h-auto sm:max-h-[90vh] bg-white rounded-t-xl sm:rounded-xl shadow-2xl outline-none flex flex-col"
         onClick={(e) => e.stopPropagation()}
