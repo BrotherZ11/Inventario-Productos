@@ -21,7 +21,6 @@ export default function ProductDetail({
     image,
     price,
     original_price,
-    stock,
     contact_msg,
   } = product;
 
@@ -39,10 +38,11 @@ export default function ProductDetail({
   const formattedPrice = fmt(priceNumber);
   const formattedOriginal = fmt(originalNumber);
 
+  const phone = "34633869448";
   const whatsappText = encodeURIComponent(
     contact_msg || `Hola, me interesa: ${title}`
   );
-  const whatsappUrl = `https://wa.me/qr/CQ7L5SK7AQMOP1/?text=${whatsappText}`;
+  const whatsappUrl = `https://wa.me/${phone}?text=${whatsappText}`;
 
   const shareUrl =
     product.url && typeof product.url === "string"
@@ -176,7 +176,6 @@ export default function ProductDetail({
 
   // accesible label IDs
   const titleId = id ? `pd-title-${id}` : undefined;
-  const descId = id ? `pd-desc-${id}` : undefined;
 
   return (
     <div
@@ -275,18 +274,6 @@ export default function ProductDetail({
                   ) : (
                     <div className="text-sm text-gray-500">
                       Precio no disponible
-                    </div>
-                  )}
-                </div>
-
-                <div className="ml-auto flex flex-col items-end gap-2">
-                  {stock !== undefined && (
-                    <div
-                      className={`text-sm font-medium ${
-                        Number(stock) <= 0 ? "text-red-600" : "text-gray-600"
-                      }`}
-                    >
-                      {Number(stock) > 0 ? `Stock: ${stock}` : "Agotado"}
                     </div>
                   )}
                 </div>
