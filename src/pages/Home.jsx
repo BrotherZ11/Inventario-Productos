@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useProducts from "../hooks/useProducts";
 import Header from "../components/Header";
 import CategoryNav from "../components/CategoryNav";
 import ProductList from "../components/ProductList";
 import ProductDetail from "../components/ProductDetail";
 import { GOOGLE_CLIENT_ID } from "../config";
+
+const PRODUCTS_PER_PAGE = 20;
 
 export default function Home() {
   const {
@@ -98,6 +100,91 @@ export default function Home() {
     setUser(null);
   };
 
+  // Abre producto desde la UI. Actualiza URL con ?shared=<id> (replaceState).
+  const openProduct = (p) => {
+    if (!p) return;
+    setSelected(p);
+
+    // calcular la página con respecto al listado completo (products)
+    try {
+      const idx = products.findIndex((x) => String(x.id) === String(p.id));
+      if (idx >= 0) {
+        const page = Math.floor(idx / PRODUCTS_PER_PAGE) + 1;
+        setCurrentPage(page);
+      }
+    } catch (err) {
+      // noop
+    }
+
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("shared", String(p.id));
+      window.history.replaceState(
+        {},
+        document.title,
+        url.pathname + url.search + url.hash
+      );
+    } catch {}
+  };
+
+  // Cierra ficha y limpia shared param de la URL
+  const closeProduct = () => {
+    setSelected(null);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("shared");
+      if (url.hash && url.hash.startsWith("#product-")) url.hash = "";
+      window.history.replaceState(
+        {},
+        document.title,
+        url.pathname + url.search + url.hash
+      );
+    } catch {}
+  };
+
+  // Si la URL contiene ?shared=<id> o #product-<id>, abrir ese producto automáticamente
+  useEffect(() => {
+    if (!products || products.length === 0) return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const sharedId =
+        params.get("shared") ||
+        (window.location.hash && window.location.hash.startsWith("#product-")
+          ? window.location.hash.replace("#product-", "")
+          : null);
+
+      if (!sharedId) return;
+
+      const foundIndex = products.findIndex(
+        (p) => String(p.id) === String(sharedId)
+      );
+      if (foundIndex >= 0) {
+        const found = products[foundIndex];
+        // asegurar que el producto sea visible: llevar a la página correcta
+        const page = Math.floor(foundIndex / PRODUCTS_PER_PAGE) + 1;
+        setCurrentPage(page);
+        setSelected(found);
+
+        // limpiar la URL para evitar reapertura al recargar
+        const url = new URL(window.location.href);
+        url.searchParams.delete("shared");
+        if (url.hash && url.hash.startsWith("#product-")) url.hash = "";
+        window.history.replaceState(
+          {},
+          document.title,
+          url.pathname + url.search + url.hash
+        );
+      }
+    } catch (err) {
+      console.error("Error procesando shared param:", err);
+    }
+  }, [products]);
+
+  // Si la búsqueda o filtros cambian, volver a la primera página
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, category, showFavorites]);
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Header
@@ -131,11 +218,12 @@ export default function Home() {
         ) : (
           <ProductList
             products={shown}
-            onSelect={(p) => setSelected(p)}
+            onSelect={(p) => openProduct(p)}
             favorites={favorites}
             onToggleFav={toggleFavorite}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
+            productsPerPage={PRODUCTS_PER_PAGE}
           />
         )}
       </main>

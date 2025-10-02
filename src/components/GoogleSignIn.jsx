@@ -1,9 +1,37 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function GoogleSignIn({ clientId, onLogin }) {
+  const [sdkReady, setSdkReady] = useState(false);
+
+  // Cargar el script si no está presente
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!window.google) return;
+
+    if (window.google && window.google.accounts) {
+      setSdkReady(true);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setSdkReady(true);
+    };
+    script.onerror = () => {
+      console.error("Error al cargar el script de Google Sign-In");
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  // Inicializar el botón de Google una vez que el SDK esté listo
+  useEffect(() => {
+    if (!sdkReady) return;
 
     function parseJwt(token) {
       const base64Url = token.split(".")[1];
@@ -11,9 +39,7 @@ export default function GoogleSignIn({ clientId, onLogin }) {
       const jsonPayload = decodeURIComponent(
         atob(base64)
           .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
           .join("")
       );
       return JSON.parse(jsonPayload);
@@ -43,7 +69,7 @@ export default function GoogleSignIn({ clientId, onLogin }) {
       document.getElementById("gsi-button"),
       { theme: "outline", size: "large", width: "220" }
     );
-  }, [clientId, onLogin]);
+  }, [sdkReady, clientId, onLogin]);
 
   return <div id="gsi-button" aria-label="Iniciar sesión con Google"></div>;
 }

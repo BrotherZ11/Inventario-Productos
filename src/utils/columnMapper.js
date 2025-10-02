@@ -17,10 +17,8 @@ export const detectedMapping = {
   "title": "Name",
   "category": "Categoria",
   "price": "Precio Venta",
-  "currency": null,
   "image": "Foto",
-  "description": null,
   "original_price": "Consideration Amount",
   "contact_msg": null,
-  "visible": null
+  "available": "Disponible",
 };

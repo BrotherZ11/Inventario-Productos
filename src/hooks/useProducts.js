@@ -31,12 +31,9 @@ export default function useProducts() {
     fetchSheetAsObjects(SHEET_ID, SHEET_NAME)
       .then((rows) => {
         const mapped = rows.map((r) => mapRowToProduct(r, detectedMapping));
-        const filtered = mapped.filter((p) => {
-          if ("visible" in p && p.visible !== "") {
-            const v = String(p.visible).toLowerCase();
-            return v === "" || v === "yes" || v === "true" || v === "1";
-          }
-          return true;
+   const filtered = mapped.filter((p) => {
+          const value = String(p.available || "").trim().toLowerCase();
+          return value === "si"; // solo muestra los disponibles
         });
         setProducts(filtered);
         setLoading(false);

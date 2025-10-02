@@ -44,12 +44,40 @@ export default function ProductDetail({
   );
   const whatsappUrl = `https://wa.me/${phone}?text=${whatsappText}`;
 
-  const shareUrl =
-    product.url && typeof product.url === "string"
-      ? product.url
-      : typeof window !== "undefined"
-      ? window.location.href
-      : "";
+  function makeShareUrl() {
+    try {
+      // si product.url es absoluta, añadimos el param shared
+      if (
+        product.url &&
+        typeof product.url === "string" &&
+        product.url.startsWith("http")
+      ) {
+        const u = new URL(product.url);
+        u.searchParams.set("shared", String(id));
+        return u.toString();
+      }
+
+      // fallback: usar el origen + pathname actual
+      if (typeof window !== "undefined") {
+        const u = new URL(window.location.href);
+        const base = `${u.origin}${u.pathname}`;
+        const share = new URL(base);
+        share.searchParams.set("shared", String(id));
+        return share.toString();
+      }
+    } catch (err) {
+      // very fallback
+      try {
+        return `${window.location.origin}${
+          window.location.pathname
+        }?shared=${encodeURIComponent(String(id))}`;
+      } catch {
+        return `?shared=${encodeURIComponent(String(id))}`;
+      }
+    }
+  }
+
+  const shareUrl = makeShareUrl();
 
   // focus trap + prevent body scroll + restore focus on close
   useEffect(() => {

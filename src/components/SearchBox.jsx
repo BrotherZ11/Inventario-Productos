@@ -13,10 +13,17 @@ export default function SearchBox({
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
 
+  // Guardamos el callback en un ref para evitar que su identidad provoque re-render loops
+  const onSearchResultsRef = useRef(onSearchResults);
+  useEffect(() => {
+    onSearchResultsRef.current = onSearchResults;
+  }, [onSearchResults]);
+
   useEffect(() => {
     if (!query) {
       setSuggestions([]);
-      onSearchResults([]);
+      // usamos el ref
+      onSearchResultsRef.current([]);
       return;
     }
 
@@ -30,11 +37,12 @@ export default function SearchBox({
       setSuggestions(results.slice(0, 8));
       setShowSuggestions(true);
       setActiveIndex(-1);
-      onSearchResults(results);
+      onSearchResultsRef.current(results);
     }, 180);
 
     return () => clearTimeout(timer);
-  }, [query, products, onSearchResults]);
+    // NOTA: no incluimos onSearchResults en deps para evitar loops; usamos el ref en su lugar.
+  }, [query, products]);
 
   useEffect(() => {
     function onDocClick(e) {
@@ -72,21 +80,22 @@ export default function SearchBox({
       e.preventDefault();
       if (activeIndex >= 0 && suggestions[activeIndex])
         selectSuggestion(suggestions[activeIndex]);
-      else
-        onSearchResults(
-          products.filter((p) =>
-            String(p.name || "")
-              .toLowerCase()
-              .includes(query.trim().toLowerCase())
-          )
+      else {
+        const res = products.filter((p) =>
+          String(p.name || p.title || "")
+            .toLowerCase()
+            .includes(query.trim().toLowerCase())
         );
+        onSearchResultsRef.current(res);
+      }
     }
   }
+
   function selectSuggestion(item) {
     onQueryChange(item.name);
     setShowSuggestions(false);
     setActiveIndex(-1);
-    onSearchResults([item]);
+    onSearchResultsRef.current([item]);
   }
 
   function clearSearch() {
@@ -94,9 +103,10 @@ export default function SearchBox({
     setSuggestions([]);
     setShowSuggestions(false);
     setActiveIndex(-1);
-    onSearchResults([]);
+    onSearchResultsRef.current([]);
     inputRef.current?.focus();
   }
+
   return (
     <div className="relative w-full" ref={suggestionsRef}>
       <input
@@ -113,6 +123,7 @@ export default function SearchBox({
         role="combobox"
         className="w-full rounded-md border border-gray-200 px-3 py-2 pr-10 text-base placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500"
       />
+
       {/* Botón limpiar (aparece solo si hay query) */}
       {query && (
         <button
@@ -134,6 +145,7 @@ export default function SearchBox({
           </svg>
         </button>
       )}
+
       <button
         type="button"
         aria-label="Buscar"
@@ -147,7 +159,7 @@ export default function SearchBox({
           );
           setSuggestions(results.slice(0, 8));
           setShowSuggestions(true);
-          onSearchResults(results);
+          onSearchResultsRef.current(results);
         }}
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden>

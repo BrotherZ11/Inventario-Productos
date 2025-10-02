@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useCallback } from "react";
 import ProductCard from "./ProductCard";
 import Pagination from "./Pagination";
 
-const DEFAULT_PRODUCTS_PER_PAGE = 20;
-
 export default function ProductList({
   products = [],
   onSelect = () => {},
@@ -11,7 +9,7 @@ export default function ProductList({
   onToggleFav = () => {},
   currentPage = 1,
   onPageChange = () => {},
-  productsPerPage = DEFAULT_PRODUCTS_PER_PAGE,
+  productsPerPage,
 }) {
   const listRef = useRef(null);
   const firstItemRef = useRef(null);
