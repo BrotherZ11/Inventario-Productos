@@ -21,4 +21,5 @@ export const detectedMapping = {
   "original_price": "Consideration Amount",
   "contact_msg": null,
   "available": "Disponible",
+  "date" : "Order Date",
 };
