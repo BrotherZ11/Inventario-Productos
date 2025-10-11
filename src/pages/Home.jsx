@@ -267,16 +267,24 @@ export default function Home() {
     if (!p) return;
     setSelected(p);
 
-    // calcular la página con respecto al listado completo (products)
+    // calcular la página preferentemente respecto a la lista mostrada (sortedShown)
     try {
-      const idx = products.findIndex((x) => String(x.id) === String(p.id));
-      if (idx >= 0) {
-        const page = Math.floor(idx / PRODUCTS_PER_PAGE) + 1;
+      // intenta encontrar en sortedShown (la lista filtrada/ordenada que se muestra)
+      const idxShown = sortedShown.findIndex(
+        (x) => String(x.id) === String(p.id)
+      );
+      if (idxShown >= 0) {
+        const page = Math.floor(idxShown / PRODUCTS_PER_PAGE) + 1;
         setCurrentPage(page);
+      } else {
+        // fallback: buscar en la lista completa products
+        const idxAll = products.findIndex((x) => String(x.id) === String(p.id));
+        if (idxAll >= 0) {
+          const page = Math.floor(idxAll / PRODUCTS_PER_PAGE) + 1;
+          setCurrentPage(page);
+        }
       }
-    } catch (err) {
-      // noop
-    }
+    } catch (err) {}
 
     try {
       const url = new URL(window.location.href);
@@ -341,6 +349,20 @@ export default function Home() {
       console.error("Error procesando shared param:", err);
     }
   }, [products]);
+
+  // Ajustar currentPage cuando la lista mostrada cambie (evita páginas vacías)
+  useEffect(() => {
+    const totalPages = Math.max(
+      1,
+      Math.ceil((sortedShown?.length || 0) / PRODUCTS_PER_PAGE)
+    );
+    setCurrentPage((cur) => {
+      if (!cur || cur < 1) return 1;
+      if (cur > totalPages) return totalPages;
+      return cur;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortedShown]);
 
   // Si la búsqueda o filtros cambian, volver a la primera página
   useEffect(() => {
