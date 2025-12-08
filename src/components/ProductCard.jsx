@@ -53,126 +53,109 @@ export default function ProductCard({
       aria-describedby={id ? `product-desc-${id}` : undefined}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
-      className="group bg-white rounded-xl overflow-hidden flex flex-col h-full shadow-sm hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-600"
+      className="group relative bg-white rounded-2xl overflow-hidden flex flex-col h-full shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-600 border border-slate-100"
     >
       {/* Imagen responsive */}
-      <div className="w-full h-44 sm:h-52 md:h-56 bg-gray-100 flex items-center justify-center overflow-hidden">
+      <div className="aspect-[4/3] w-full bg-slate-100 relative overflow-hidden">
         {image ? (
           <img
             src={image}
             alt={title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
             decoding="async"
           />
         ) : (
-          <div className="text-gray-400 text-sm px-3">Sin imagen</div>
+          <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
+            Sin imagen
+          </div>
         )}
+
+        {/* Botón favorito flotante */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFav && onToggleFav(product);
+          }}
+          aria-pressed={!!isFav}
+          aria-label={
+            isFav
+              ? `Quitar ${title} de favoritos`
+              : `Añadir ${title} a favoritos`
+          }
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center shadow-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-600 ${
+            isFav
+              ? "bg-white text-red-500 hover:scale-110"
+              : "bg-white/90 text-slate-400 hover:text-red-500 hover:bg-white hover:scale-110"
+          }`}
+        >
+          <svg
+            className={`w-5 h-5 transition-transform ${isFav ? 'scale-100 fill-current' : 'scale-100'}`}
+            viewBox="0 0 24 24"
+            fill={isFav ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+          </svg>
+        </button>
       </div>
 
-      <div className="p-3 sm:p-4 flex flex-col flex-1 gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            {/* Título: permite hasta 2 líneas (multiline clamp sin plugin) */}
-            <h3
-              id={`product-title-${id}`}
-              className="text-base sm:text-lg font-semibold text-gray-900"
-              style={{
-                display: "-webkit-box",
-                WebkitLineClamp: 5,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-              }}
-            >
-              <span className="block">{title}</span>
-            </h3>
-
-            {category && (
-              <p className="text-xs sm:text-sm text-gray-500 mt-1 truncate">
-                {category}
-              </p>
-            )}
-          </div>
-
-          {/* Botón favorito separado (detener propagación para que no abra el detalle) */}
-          <div className="flex flex-col items-end gap-2">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleFav && onToggleFav(product);
-              }}
-              aria-pressed={!!isFav}
-              aria-label={
-                isFav
-                  ? `Quitar ${title} de favoritos`
-                  : `Añadir ${title} a favoritos`
-              }
-              className={`inline-flex items-center justify-center w-10 h-10 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-600 ${
-                isFav
-                  ? "bg-red-50 text-red-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              <svg
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden
-              >
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            </button>
-          </div>
+      <div className="p-4 flex flex-col flex-1 gap-2">
+        <div className="flex-1 min-w-0">
+          {category && (
+            <p className="text-xs font-medium text-indigo-600 mb-1 truncate uppercase tracking-wide">
+              {category}
+            </p>
+          )}
+          
+          {/* Título */}
+          <h3
+            id={`product-title-${id}`}
+            className="text-base font-bold text-slate-900 leading-snug group-hover:text-indigo-700 transition-colors"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {title}
+          </h3>
         </div>
 
-        {/* Precio y Boton Detalles: separados con espacio y botón más pequeño en móvil */}
-        <div className="mt-auto flex items-center justify-between gap-3">
+        {/* Precio y acción */}
+        <div className="mt-3 flex items-end justify-between gap-2">
           <div className="flex flex-col">
             {formattedOriginal &&
               priceNumber !== null &&
               originalNumber > priceNumber && (
-                <span className="text-sm text-gray-400 line-through">
+                <span className="text-xs text-slate-400 line-through mb-0.5">
                   {formattedOriginal}
                 </span>
               )}
             {formattedPrice ? (
-              <span className="text-lg sm:text-xl font-semibold text-gray-900 whitespace-nowrap">
+              <span className="text-lg font-bold text-slate-900">
                 {formattedPrice}
               </span>
             ) : (
-              <span className="text-sm text-gray-500">
-                Precio no disponible
+              <span className="text-sm text-slate-500">
+                Consultar
               </span>
             )}
           </div>
 
-          {/* Botón Detalles */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect && onSelect(product);
-            }}
-            className="inline-flex items-center gap-2 px-1.5 py-1 sm:px-2 sm:py-1 bg-teal-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-teal-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-600"
-            aria-label={`Ver detalles de ${title}`}
-          >
-            Detalles
-            {/* <svg
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden
-            >
-              <path
-                d="M5 12h14M12 5l7 7-7 7"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg> */}
-          </button>
+          {/* Botón "Ver" implícito o explícito pequeño */}
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-x-2 group-hover:translate-x-0">
+             <span className="text-sm font-medium text-indigo-600 flex items-center gap-1">
+               Ver
+               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+             </span>
+          </div>
         </div>
       </div>
     </article>

@@ -89,29 +89,29 @@ export default function CategoryNav({
   };
 
   return (
-    <div className="relative">
+    <div className="relative group">
       {/* left fade (visible en sm+) */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 hidden sm:block"
+        className={`pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10 transition-opacity duration-300 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`}
         style={{
           background:
-            "linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0))",
+            "linear-gradient(90deg, rgba(248,250,252,1) 0%, rgba(248,250,252,0) 100%)",
         }}
       />
 
       {/* right fade (visible en sm+) */}
       <div
         aria-hidden
-        className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 hidden sm:block"
+        className={`pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10 transition-opacity duration-300 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`}
         style={{
           background:
-            "linear-gradient(270deg, rgba(255,255,255,1), rgba(255,255,255,0))",
+            "linear-gradient(270deg, rgba(248,250,252,1) 0%, rgba(248,250,252,0) 100%)",
         }}
       />
 
       <div className="flex items-center gap-2">
-        {/* Scroll left button: visible si hay overflow */}
+        {/* Scroll left button */}
         {showNavArrows && (
           <button
             aria-label="Desplazar categorías a la izquierda"
@@ -119,25 +119,23 @@ export default function CategoryNav({
             onClick={() => scrollBy(-scrollDelta())}
             disabled={!canScrollLeft}
             aria-disabled={!canScrollLeft}
-            className={`inline-flex items-center justify-center w-9 h-9 rounded-md border bg-white text-gray-600 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500 transition
+            className={`hidden md:inline-flex items-center justify-center w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all absolute left-0 z-20 -translate-x-1/2 top-1/2 -translate-y-1/2
               ${
                 !canScrollLeft
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-50"
+                  ? "opacity-0 pointer-events-none"
+                  : "opacity-100 hover:bg-slate-50 hover:scale-110"
               }
             `}
           >
-            <span aria-hidden className="text-lg">
-              ‹
-            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
         )}
 
-        {/* Scrollable nav - toma el espacio restante */}
+        {/* Scrollable nav */}
         <nav
           aria-label="Categorías"
           ref={containerRef}
-          className="flex-1 flex gap-2 py-3 px-2 overflow-x-auto no-scrollbar scroll-smooth"
+          className="flex-1 flex gap-3 py-4 px-1 overflow-x-auto no-scrollbar scroll-smooth mask-linear"
           tabIndex={0}
         >
           {categories.map((cat, idx) => {
@@ -150,11 +148,11 @@ export default function CategoryNav({
                 onKeyDown={(e) => onKeyDown(e, idx)}
                 aria-pressed={active}
                 aria-current={active ? "true" : undefined}
-                className={`flex-shrink-0 px-4 py-2 rounded-full font-semibold whitespace-nowrap text-sm sm:text-base transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500
+                className={`flex-shrink-0 px-5 py-2.5 rounded-full font-medium whitespace-nowrap text-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500
                   ${
                     active
-                      ? "bg-teal-600 text-white shadow-md"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 scale-105"
+                      : "bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50"
                   }
                 `}
                 title={cat}
@@ -174,17 +172,15 @@ export default function CategoryNav({
             onClick={() => scrollBy(scrollDelta())}
             disabled={!canScrollRight}
             aria-disabled={!canScrollRight}
-            className={`inline-flex items-center justify-center w-9 h-9 rounded-md border bg-white text-gray-600 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500 transition
+            className={`hidden md:inline-flex items-center justify-center w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-600 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all absolute right-0 z-20 translate-x-1/2 top-1/2 -translate-y-1/2
               ${
                 !canScrollRight
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-50"
+                  ? "opacity-0 pointer-events-none"
+                  : "opacity-100 hover:bg-slate-50 hover:scale-110"
               }
             `}
           >
-            <span aria-hidden className="text-lg">
-              ›
-            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         )}
       </div>

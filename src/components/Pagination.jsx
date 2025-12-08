@@ -33,26 +33,38 @@ export default function Pagination({
     <nav
       role="navigation"
       aria-label="Paginación de productos"
-      className="mt-6 flex flex-col items-center gap-2 sm:gap-3"
+      className="mt-8 flex flex-col items-center gap-4 animate-fade-in"
     >
-      <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
+      <div className="flex flex-wrap items-center justify-center gap-2">
         {/* Botón Anterior */}
         <button
           onClick={() => handle(currentPage - 1)}
           disabled={currentPage === 1}
           aria-label="Página anterior"
-          className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border text-sm transition ${
+          className={`group flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-600 ${
             currentPage === 1
-              ? "opacity-50 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-100"
-              : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500"
+              ? "opacity-50 cursor-not-allowed bg-slate-100 text-slate-400"
+              : "bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 hover:shadow-sm border border-slate-200 hover:border-indigo-200"
           }`}
         >
-          ←<span className="hidden sm:inline ml-1">Anterior</span>
+          <svg
+            className="w-4 h-4 transition-transform group-hover:-translate-x-0.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          <span className="hidden sm:inline">Anterior</span>
         </button>
 
         {/* Páginas */}
         <div
-          className="flex items-center"
+          className="flex items-center gap-1 bg-slate-100/50 p-1 rounded-full"
           aria-live="polite"
           aria-atomic="true"
         >
@@ -60,20 +72,20 @@ export default function Pagination({
             p === "start-ellipsis" || p === "end-ellipsis" ? (
               <span
                 key={p + i}
-                className="mx-1 sm:mx-2 text-gray-400 select-none"
+                className="w-8 h-8 flex items-center justify-center text-slate-400 select-none text-xs"
               >
-                …
+                •••
               </span>
             ) : (
               <button
                 key={p}
                 onClick={() => handle(p)}
                 aria-current={p === currentPage ? "page" : undefined}
-                className={`px-2 sm:px-3 py-1 sm:py-1.5 mx-0.5 rounded-md border text-sm transition ${
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-sm font-medium transition-all duration-200 flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-600 ${
                   p === currentPage
-                    ? "bg-teal-500 text-white border-teal-500"
-                    : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-                } focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500`}
+                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 scale-105"
+                    : "text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-sm"
+                }`}
               >
                 {p}
               </button>
@@ -86,19 +98,32 @@ export default function Pagination({
           onClick={() => handle(currentPage + 1)}
           disabled={currentPage === totalPages}
           aria-label="Página siguiente"
-          className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border text-sm transition ${
+          className={`group flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-600 ${
             currentPage === totalPages
-              ? "opacity-50 cursor-not-allowed bg-gray-50 text-gray-400 border-gray-100"
-              : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500"
+              ? "opacity-50 cursor-not-allowed bg-slate-100 text-slate-400"
+              : "bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 hover:shadow-sm border border-slate-200 hover:border-indigo-200"
           }`}
         >
-          <span className="hidden sm:inline mr-1">Siguiente</span> →
+          <span className="hidden sm:inline">Siguiente</span>
+          <svg
+            className="w-4 h-4 transition-transform group-hover:translate-x-0.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
         </button>
       </div>
 
       {/* Texto informativo */}
-      <div className="text-xs text-gray-500 select-none">
-        Página {currentPage} de {totalPages}
+      <div className="text-xs font-medium text-slate-400 select-none">
+        Página <span className="text-slate-700">{currentPage}</span> de{" "}
+        <span className="text-slate-700">{totalPages}</span>
       </div>
     </nav>
   );
