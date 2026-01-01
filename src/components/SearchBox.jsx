@@ -19,6 +19,14 @@ export default function SearchBox({
     onSearchResultsRef.current = onSearchResults;
   }, [onSearchResults]);
 
+  // Helper para normalizar texto (quitar acentos, diacríticos y minusculas)
+  const normalizeText = (text) => {
+    return String(text || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  };
+
   useEffect(() => {
     if (!query) {
       setSuggestions([]);
@@ -27,12 +35,10 @@ export default function SearchBox({
       return;
     }
 
-    const q = query.trim().toLowerCase();
+    const q = normalizeText(query.trim());
     const timer = setTimeout(() => {
       const results = products.filter((p) =>
-        String(p.name || p.title || "")
-          .toLowerCase()
-          .includes(q)
+        normalizeText(p.name || p.title || "").includes(q)
       );
       setSuggestions(results.slice(0, 8));
       setShowSuggestions(true);
@@ -81,10 +87,9 @@ export default function SearchBox({
       if (activeIndex >= 0 && suggestions[activeIndex])
         selectSuggestion(suggestions[activeIndex]);
       else {
+        const q = normalizeText(query.trim());
         const res = products.filter((p) =>
-          String(p.name || p.title || "")
-            .toLowerCase()
-            .includes(query.trim().toLowerCase())
+          normalizeText(p.name || p.title || "").includes(q)
         );
         onSearchResultsRef.current(res);
       }
@@ -151,11 +156,9 @@ export default function SearchBox({
         aria-label="Buscar"
         className="absolute right-1 top-1/2 -translate-y-1/2 px-3 py-1 rounded-md text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500"
         onClick={() => {
-          const q = query.trim().toLowerCase();
+          const q = normalizeText(query.trim());
           const results = products.filter((p) =>
-            String(p.name || p.title || "")
-              .toLowerCase()
-              .includes(q)
+            normalizeText(p.name || p.title || "").includes(q)
           );
           setSuggestions(results.slice(0, 8));
           setShowSuggestions(true);

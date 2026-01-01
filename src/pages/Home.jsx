@@ -151,17 +151,29 @@ export default function Home() {
   // Si category === "Novedades" usamos latestProducts como base.
   const baseShown = useMemo(() => {
     const hasSearch = searchResults && searchResults.length > 0;
-    let base = category === "Novedades🔥" ? latestProducts : shownByCategory;
+    const hasQuery = searchQuery && searchQuery.trim().length > 0;
 
-    if (hasSearch) {
-      const ids = new Set(searchResults.map((p) => String(p.id)));
-      base = base.filter((p) => ids.has(String(p.id)));
+    // Si hay búsqueda (query o resultados), ignoramos la categoría actual y buscamos en todo.
+    // El componente SearchBox ya nos devuelve los resultados filtrados globalmente en `searchResults`.
+    if (hasSearch || hasQuery) {
+       let results = searchResults || [];
+       if (showFavorites) {
+          results = results.filter(p => favorites.includes(p.id));
+       }
+       return results;
     }
-    if (showFavorites) base = base.filter((p) => favorites.includes(p.id));
+
+    // SIN búsqueda: lógica normal de categorías / novedades
+    let base = category === "Novedades🔥" ? latestProducts : shownByCategory;
+    
+    if (showFavorites) {
+      base = base.filter((p) => favorites.includes(p.id));
+    }
 
     return base;
   }, [
     searchResults,
+    searchQuery, // Agregamos searchQuery a dependencias
     shownByCategory,
     category,
     showFavorites,
